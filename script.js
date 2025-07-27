@@ -1,41 +1,39 @@
 let highestZ = 1;
 
-const audio = new Audio('music.mp3');
-audio.loop = true;
-audio.volume = 0.5;
-window.addEventListener('DOMContentLoaded', () => {
-  audio.play().catch(() => {
-    // Autoplay might be blocked; wait for user interaction
-    document.body.addEventListener('click', () => audio.play(), { once: true });
-  });
-});
 class Paper {
   holdingPaper = false;
-  mouseTouchX = 0;
-  mouseTouchY = 0;
-  mouseX = 0;
-  mouseY = 0;
-  prevMouseX = 0;
-  prevMouseY = 0;
+  touchStartX = 0;
+  touchStartY = 0;
+  touchMoveX = 0;
+  touchMoveY = 0;
+  touchEndX = 0;
+  touchEndY = 0;
+  prevTouchX = 0;
+  prevTouchY = 0;
   velX = 0;
   velY = 0;
   rotation = Math.random() * 30 - 15;
   currentPaperX = 0;
   currentPaperY = 0;
   rotating = false;
+  tapTimeout = null;
+  tapStartTime = 0;
+  tapMoved = false;
 
   init(paper) {
-    document.addEventListener('mousemove', (e) => {
+    paper.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      this.tapMoved = true;
       if(!this.rotating) {
-        this.mouseX = e.clientX;
-        this.mouseY = e.clientY;
+        this.touchMoveX = e.touches[0].clientX;
+        this.touchMoveY = e.touches[0].clientY;
         
-        this.velX = this.mouseX - this.prevMouseX;
-        this.velY = this.mouseY - this.prevMouseY;
+        this.velX = this.touchMoveX - this.prevTouchX;
+        this.velY = this.touchMoveY - this.prevTouchY;
       }
         
-      const dirX = e.clientX - this.mouseTouchX;
-      const dirY = e.clientY - this.mouseTouchY;
+      const dirX = e.touches[0].clientX - this.touchStartX;
+      const dirY = e.touches[0].clientY - this.touchStartY;
       const dirLength = Math.sqrt(dirX*dirX+dirY*dirY);
       const dirNormalizedX = dirX / dirLength;
       const dirNormalizedY = dirY / dirLength;
@@ -52,32 +50,49 @@ class Paper {
           this.currentPaperX += this.velX;
           this.currentPaperY += this.velY;
         }
-        this.prevMouseX = this.mouseX;
-        this.prevMouseY = this.mouseY;
+        this.prevTouchX = this.touchMoveX;
+        this.prevTouchY = this.touchMoveY;
 
         paper.style.transform = `translateX(${this.currentPaperX}px) translateY(${this.currentPaperY}px) rotateZ(${this.rotation}deg)`;
       }
-    })
+    });
 
-    paper.addEventListener('mousedown', (e) => {
+    paper.addEventListener('touchstart', (e) => {
       if(this.holdingPaper) return; 
       this.holdingPaper = true;
       
       paper.style.zIndex = highestZ;
       highestZ += 1;
       
-      if(e.button === 0) {
-        this.mouseTouchX = this.mouseX;
-        this.mouseTouchY = this.mouseY;
-        this.prevMouseX = this.mouseX;
-        this.prevMouseY = this.mouseY;
-      }
-      if(e.button === 2) {
-        this.rotating = true;
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.prevTouchX = this.touchStartX;
+      this.prevTouchY = this.touchStartY;
+
+      // Tap detection
+      this.tapStartTime = Date.now();
+      this.tapMoved = false;
+    });
+
+    paper.addEventListener('touchend', (e) => {
+      this.holdingPaper = false;
+      this.rotating = false;
+
+      // Tap detection: if touch was short and didn't move
+      const tapDuration = Date.now() - this.tapStartTime;
+      if (!this.tapMoved && tapDuration < 200) {
+        // Move paper sideways (e.g., 200px to the right)
+        this.currentPaperX += 200;
+        paper.style.transform = `translateX(${this.currentPaperX}px) translateY(${this.currentPaperY}px) rotateZ(${this.rotation}deg)`;
       }
     });
-    window.addEventListener('mouseup', () => {
-      this.holdingPaper = false;
+
+    // For two-finger rotation on touch screens
+    paper.addEventListener('gesturestart', (e) => {
+      e.preventDefault();
+      this.rotating = true;
+    });
+    paper.addEventListener('gestureend', () => {
       this.rotating = false;
     });
   }
@@ -89,19 +104,3 @@ papers.forEach(paper => {
   const p = new Paper();
   p.init(paper);
 });
-
-const shadows = [
-        '0 0 8px #FF3CAC, 0 0 16px #784BA0, 0 0 24px #2B86C5, 0 0 32px #42E695',
-        '0 0 8px #F7971E, 0 0 16px #FFD200, 0 0 24px #21D4FD, 0 0 32px #B721FF',
-        '0 0 8px #F953C6, 0 0 16px #B91D73, 0 0 24px #43E97B, 0 0 32px #38F9D7',
-        '0 0 8px #FF6A00, 0 0 16px #EE0979, 0 0 24px #FF61A6, 0 0 32px #16A085',
-        '0 0 8px #00F2FE, 0 0 16px #4FACFE, 0 0 24px #43E97B, 0 0 32px #38F9D7',
-        '0 0 8px #F7971E, 0 0 16px #FFD200, 0 0 24px #21D4FD, 0 0 32px #B721FF',
-        '0 0 8px #F953C6, 0 0 16px #B91D73, 0 0 24px #43E97B, 0 0 32px #38F9D7',
-        '0 0 8px #FF6A00, 0 0 16px #EE0979, 0 0 24px #FF61A6, 0 0 32px #16A085'
-      ];
-      let idx = 0;
-      setInterval(() => {
-        document.querySelector('.rainbow-shadow').style.textShadow = shadows[idx];
-        idx = (idx + 1) % shadows.length;
-      }, 200);
