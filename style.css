@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Zeyada&display=swap');
+
+
+
+
+body {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-size: 1000px;
+  background-image: url("images/12.jpg");
+  background-position: center center;
+ 
+  
+  
+}
+
+.paper {
+  background-image: url("images/kk.jpg"); 
+  background-size: cover;
+  padding: 20px 100px;
+
+  
+  transform: rotateZ(-5deg);
+  box-shadow: 1px 15px 20px 0px rgba(0,0,0,0.5);
+  
+  position: absolute;
+  border-radius: 20px;
+}
+/* .paper {
+  background: linear-gradient(135deg, #fffbe6 80%, #f5e9c6 100%);
+  background-image: url("images/kk.jpg"), linear-gradient(135deg, #fffbe6 80%, #f5e9c6 100%);
+  background-blend-mode: multiply;
+  background-size: cover;
+  padding: 32px 60px 28px 60px;
+  box-shadow:
+    0 2px 8px 0 rgba(0,0,0,0.15),
+    0 8px 32px 0 rgba(0,0,0,0.12),
+    0 0 0 1.5px #e6d8b4 inset;
+  border-radius: 18px 22px 18px 22px/20px 18px 22px 18px;
+  border: 1.5px solid #e6d8b4;
+  position: absolute;
+  transform: rotateZ(-4deg) skew(-1deg, 0.5deg);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.13));
+} */
+.paper.heart {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.paper.image {
+  padding: 10px;
+}
+.paper.image p {
+  font-size: 30px;
+}
+
+img {
+  max-height: 200px;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  user-select: none;
+}
+
+.paper.heart::after {
+  content: "";
+  background-image: url('https://cdn.pixabay.com/photo/2016/03/31/19/25/cartoon-1294994__340.png');
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-size: 150px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.6;
+}
+
+p {
+  font-family: 'Zeyada';
+  font-size: 50px;
+  color: rgb(0,0,100);
+  opacity: 0.75;
+  user-select: none;
+  filter: drop-shadow(2px 1.5px 1px rgba(255, 0, 247, 0.9));
+  text-align: center;
+}
+
+.p1 .red{
+  color: red !important;
+  font-weight: bold;
+}
+
+      .rainbow-shadow {
+        color: #fff;
+        font-weight: bold;
+        transition: text-shadow 0.2s;
+      }
